@@ -1,16 +1,11 @@
 package pl.plateauu;
 
-import java.awt.BorderLayout;
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
 public class Timer
 {
 
 	private long startTime;
-	private long stopTime; 
-	
+	private long stopTime;
+
 	/**
 	 * @return the startTime
 	 */
@@ -20,7 +15,8 @@ public class Timer
 	}
 
 	/**
-	 * @param startTime the startTime to set
+	 * @param startTime
+	 *            the startTime to set
 	 */
 	public void setStartTime(long startTime)
 	{
@@ -36,7 +32,8 @@ public class Timer
 	}
 
 	/**
-	 * @param stopTime the stopTime to set
+	 * @param stopTime
+	 *            the stopTime to set
 	 */
 	public void setStopTime(long stopTime)
 	{
@@ -51,7 +48,16 @@ public class Timer
 	void stop()
 	{
 		stopTime = System.nanoTime();
-		System.out.println(stopTime - startTime * 1e-9 );
+		System.out.println((int) ((stopTime - startTime) * 1e-9) + " S.");
+		
+	}
+
+	String elapsed()
+	{
+		long currentTime = System.nanoTime();
+		long start = startTime;
+		long value = currentTime -  start;
+		return Long.toString(value/100);
 	}
 
 }
