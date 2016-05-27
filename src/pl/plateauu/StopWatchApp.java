@@ -117,7 +117,6 @@ public class StopWatchApp extends JFrame
 		public void actionPerformed(ActionEvent arg0)
 		{
 			timer.stop();
-			// timerArea.setText("0");
 		}
 
 	}
