@@ -29,10 +29,23 @@ public class StopWatchView {
     public JFrame frame;
     private StopWatchModel allProjectsTimer;
 
+    public void setTitleAreaEditable() {
+	this.titleArea.setEditable(true);
+    }
+
+    public void setTitleAreaTitle(String title) {
+	this.titleArea.setText(title);
+	this.titleArea.setEditable(false);
+    }
+
+    public void setTitleAreaTitle() {
+	this.titleArea.setEditable(false);
+    }
+
     public void initGui() {
 	frame = new JFrame();
-	frame.setSize(300, 150);
-	frame.setTitle("StopWatch of App");
+	frame.setSize(270, 160);
+	frame.setTitle("StopWatch of App Coding");
 	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	Font bigFont = new Font("sans", Font.BOLD, 14);
 
@@ -55,18 +68,24 @@ public class StopWatchView {
 	JMenu fileMenu = new JMenu("File");
 	fileMenu.setMnemonic(KeyEvent.VK_F);
 
-	JMenuItem loadItem = new JMenuItem("Load");
+	JMenuItem loadItem = new JMenuItem("Load project");
 	loadItem.setMnemonic(KeyEvent.VK_L);
 	loadItem.addActionListener(new LoadItemListener());
 
-	JMenuItem saveItem = new JMenuItem("Save");
+	JMenuItem saveItem = new JMenuItem("Save project");
 	saveItem.setMnemonic(KeyEvent.VK_S);
 	saveItem.addActionListener(new SaveItemListener());
 
-	JMenuItem exitItem = new JMenuItem("Exit");
+	JMenuItem exitItem = new JMenuItem("Exit program");
 	exitItem.setMnemonic(KeyEvent.VK_E);
 	exitItem.addActionListener(new ExitItemListener());
+	
+	JMenuItem newItem = new JMenuItem("New project");
+	newItem.setMnemonic(KeyEvent.VK_N);
+	newItem.addActionListener(new NewItemListener());
 
+	fileMenu.add(newItem);
+	fileMenu.addSeparator();
 	fileMenu.add(saveItem);
 	fileMenu.add(loadItem);
 	fileMenu.addSeparator();
@@ -78,9 +97,9 @@ public class StopWatchView {
 	titleArea = new JTextArea(1, 20);
 	titleArea.setText("Type the project title");
 	titleArea.selectAll();
-	
-	StatusBar statusBar  = new StatusBar();
-	statusBar.setMessage("Total time spend at projects: ");
+
+	StatusBar statusBar = new StatusBar();
+	statusBar.setMessage("Total time: Tutaj bêdzie licznik");
 
 	panel.add(titleArea);
 	panel.add(timerLabel);
@@ -94,60 +113,67 @@ public class StopWatchView {
 	frame.setVisible(true);
     }
 
+    
+    private void saveTheProject() {
+	JFileChooser winChooser = new JFileChooser();
+	winChooser.setDialogTitle("Gdzie zapisaæ projekt?");
+	winChooser.showSaveDialog(frame);
+	try {
+	FileOutputStream outputStr = new FileOutputStream(winChooser.getSelectedFile());
+	ObjectOutputStream os = new ObjectOutputStream(outputStr);
+	os.writeObject(timer);
+	os.close();
+	} catch (IOException e) {
+	e.printStackTrace();
+	}
+    }
+
+
+    private class NewItemListener implements ActionListener {
+	public void actionPerformed(ActionEvent arg0) {
+	    timer = new StopWatchModel();
+	    setTitleAreaTitle("Type a new project");
+	    setTitleAreaEditable();
+	}
+	
+    }
+    
     private class StartButtonListener implements ActionListener {
-	@Override
 	public void actionPerformed(ActionEvent e) {
 	    timer = new StopWatchModel();
 	    timer.start();
 	    javax.swing.Timer time = new javax.swing.Timer(1000, new TimerListerner());
 	    time.start();
-	    titleArea.setEditable(false);
+	    setTitleAreaTitle();
 	}
     }
 
     private class StoptButtonListener implements ActionListener {
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    timer.stop();
 	}
     }
 
     private class TimerListerner implements ActionListener {
-
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    timerField.setText(timer.stringTime());
 	}
     }
 
     private class ResumeButtonListener implements ActionListener {
-
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    timer.resume();
 	}
     }
 
     private class SaveItemListener implements ActionListener {
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    timer.stop();
-	    JFileChooser winChooser = new JFileChooser();
-	    winChooser.setDialogTitle("Gdzie zapisaæ projekt?");
-	    winChooser.showSaveDialog(frame);
-	    try {
-		FileOutputStream outputStr = new FileOutputStream(winChooser.getSelectedFile());
-		ObjectOutputStream os = new ObjectOutputStream(outputStr);
-		os.writeObject(timer);
-		os.close();
-	    } catch (IOException e) {
-		e.printStackTrace();
-	    }
+	    saveTheProject();
 	}
     }
 
     private class LoadItemListener implements ActionListener {
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    {
 		timer.stop();
@@ -169,15 +195,14 @@ public class StopWatchView {
 		timer.setStopTime(loadTimer.getStopTime());
 		timer.setResumeTime(loadTimer.getResumeTime());
 		timer.setRunning(loadTimer.isRunning());
-
 		timerField.setText(timer.stringTime());
+		setTitleAreaTitle(timer.getTitle());
 
 	    }
 	}
     }
 
     private class ExitItemListener implements ActionListener {
-	@Override
 	public void actionPerformed(ActionEvent arg0) {
 	    System.exit(0);
 	}
