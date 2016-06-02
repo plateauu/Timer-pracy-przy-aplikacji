@@ -12,7 +12,7 @@ public class Main {
     public Main() {
 	this.theView = new StopWatchView();
 	this.theModel = new StopWatchModel();
-	theView.initGui();
+	theView.init();
     }
 
 }

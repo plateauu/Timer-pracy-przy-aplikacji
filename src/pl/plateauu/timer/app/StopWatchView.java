@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,6 +29,7 @@ public class StopWatchView {
     public JTextArea titleArea;
     public JFrame frame;
     private StopWatchModel allProjectsTimer;
+    private StatusBar statusBar;
 
     public void setTitleAreaEditable() {
 	this.titleArea.setEditable(true);
@@ -42,7 +44,11 @@ public class StopWatchView {
 	this.titleArea.setEditable(false);
     }
 
-    public void initGui() {
+    public void init() {
+	
+	openAllProjectTimer();
+	tryAllProjectTimer();
+	
 	frame = new JFrame();
 	frame.setSize(270, 160);
 	frame.setTitle("StopWatch of App Coding");
@@ -98,8 +104,8 @@ public class StopWatchView {
 	titleArea.setText("Type the project title");
 	titleArea.selectAll();
 
-	StatusBar statusBar = new StatusBar();
-	statusBar.setMessage("Total time: Tutaj bêdzie licznik");
+	statusBar = new StatusBar();
+	statusBar.setMessage("Total time: " + allProjectsTimer.stringTime());
 
 	panel.add(titleArea);
 	panel.add(timerLabel);
@@ -113,6 +119,25 @@ public class StopWatchView {
 	frame.setVisible(true);
     }
 
+
+    void openAllProjectTimer(){
+	try {
+	    File file = new File("totalTimerConfig.sav");
+	    file.createNewFile();
+	    FileInputStream is = new FileInputStream(file);
+	    ObjectInputStream os = new ObjectInputStream(is);
+	    allProjectsTimer = (StopWatchModel) os.readObject();
+	} catch (Exception e) {
+	    e.printStackTrace();
+	}
+    }
+    
+    void tryAllProjectTimer(){
+	if (allProjectsTimer == null){
+	    this.allProjectsTimer = new StopWatchModel();
+	}
+    }
+    
     
     private void saveTheProject() {
 	JFileChooser winChooser = new JFileChooser();
@@ -142,6 +167,7 @@ public class StopWatchView {
 	public void actionPerformed(ActionEvent e) {
 	    timer = new StopWatchModel();
 	    timer.start();
+	    allProjectsTimer.resume();
 	    javax.swing.Timer time = new javax.swing.Timer(1000, new TimerListerner());
 	    time.start();
 	    setTitleAreaTitle();
@@ -151,24 +177,29 @@ public class StopWatchView {
     private class StoptButtonListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 	    timer.stop();
+	    allProjectsTimer.stop();
 	}
     }
 
     private class TimerListerner implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 	    timerField.setText(timer.stringTime());
+	    statusBar.setMessage(allProjectsTimer.stringTime());
+	    
 	}
     }
 
     private class ResumeButtonListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 	    timer.resume();
+	    allProjectsTimer.resume();
 	}
     }
 
     private class SaveItemListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
 	    timer.stop();
+	    allProjectsTimer.stop();
 	    saveTheProject();
 	}
     }
@@ -177,6 +208,7 @@ public class StopWatchView {
 	public void actionPerformed(ActionEvent arg0) {
 	    {
 		timer.stop();
+		allProjectsTimer.stop();
 
 		StopWatchModel loadTimer = null;
 		JFileChooser fileCh = new JFileChooser();

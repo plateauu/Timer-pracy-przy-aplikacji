@@ -4,11 +4,10 @@ import java.io.Serializable;
 
 import pl.plateauu.timer.app.*;
 
-
 public class StopWatchModel implements Serializable {
 
     private static final long serialVersionUID = 7224616195898281026L;
-    
+
     private long startTime = 0;
     private long stopTime = 0;
     private long resumeTime = 0;
@@ -16,15 +15,15 @@ public class StopWatchModel implements Serializable {
     private String title = null;
     private StopWatchView theView;
 
-    public StopWatchModel(StopWatchView theView){
+    public StopWatchModel(StopWatchView theView) {
 	super();
-	this.theView = theView; 
+	this.theView = theView;
     }
-    
-    public StopWatchModel(){
+
+    public StopWatchModel() {
 	super();
     }
-    
+
     public String getTitle() {
 	return title;
     }
@@ -66,10 +65,9 @@ public class StopWatchModel implements Serializable {
     }
 
     public void start() {
-	this.startTime = System.currentTimeMillis();
+	this.startTime = System.currentTimeMillis() - stopTime - resumeTime;
 	this.running = true;
-	
-	
+
     }
 
     public void stop() {
