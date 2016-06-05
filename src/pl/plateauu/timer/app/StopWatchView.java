@@ -45,10 +45,10 @@ public class StopWatchView {
     }
 
     public void init() {
-	
+
 	openAllProjectTimer();
 	tryAllProjectTimer();
-	
+
 	frame = new JFrame();
 	frame.setSize(270, 160);
 	frame.setTitle("StopWatch of App Coding");
@@ -85,7 +85,7 @@ public class StopWatchView {
 	JMenuItem exitItem = new JMenuItem("Exit program");
 	exitItem.setMnemonic(KeyEvent.VK_E);
 	exitItem.addActionListener(new ExitItemListener());
-	
+
 	JMenuItem newItem = new JMenuItem("New project");
 	newItem.setMnemonic(KeyEvent.VK_N);
 	newItem.addActionListener(new NewItemListener());
@@ -119,8 +119,7 @@ public class StopWatchView {
 	frame.setVisible(true);
     }
 
-
-    void openAllProjectTimer(){
+    void openAllProjectTimer() {
 	try {
 	    File file = new File("totalTimerConfig.sav");
 	    file.createNewFile();
@@ -131,28 +130,29 @@ public class StopWatchView {
 	    e.printStackTrace();
 	}
     }
-    
-    void tryAllProjectTimer(){
-	if (allProjectsTimer == null){
+
+    void tryAllProjectTimer() {
+	if (allProjectsTimer == null) {
 	    this.allProjectsTimer = new StopWatchModel();
+	    allProjectsTimer.setStartTime(System.currentTimeMillis());
+	    allProjectsTimer.setStopTime(allProjectsTimer.getStartTime());
 	}
     }
-    
-    
+
     private void saveTheProject() {
 	JFileChooser winChooser = new JFileChooser();
 	winChooser.setDialogTitle("Gdzie zapisaæ projekt?");
 	winChooser.showSaveDialog(frame);
+
 	try {
-	FileOutputStream outputStr = new FileOutputStream(winChooser.getSelectedFile());
-	ObjectOutputStream os = new ObjectOutputStream(outputStr);
-	os.writeObject(timer);
-	os.close();
+	    FileOutputStream outputStr = new FileOutputStream(winChooser.getSelectedFile());
+	    ObjectOutputStream os = new ObjectOutputStream(outputStr);
+	    os.writeObject(timer);
+	    os.close();
 	} catch (IOException e) {
-	e.printStackTrace();
+	    e.printStackTrace();
 	}
     }
-
 
     private class NewItemListener implements ActionListener {
 	public void actionPerformed(ActionEvent arg0) {
@@ -160,14 +160,20 @@ public class StopWatchView {
 	    setTitleAreaTitle("Type a new project");
 	    setTitleAreaEditable();
 	}
-	
+
     }
-    
+
     private class StartButtonListener implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 	    timer = new StopWatchModel();
 	    timer.start();
-	    allProjectsTimer.resume();
+	    
+	    if (allProjectsTimer == null) {
+		allProjectsTimer = new StopWatchModel();
+		allProjectsTimer.start();
+	    } else {
+		allProjectsTimer.resume();
+	    }
 	    javax.swing.Timer time = new javax.swing.Timer(1000, new TimerListerner());
 	    time.start();
 	    setTitleAreaTitle();
@@ -185,7 +191,7 @@ public class StopWatchView {
 	public void actionPerformed(ActionEvent arg0) {
 	    timerField.setText(timer.stringTime());
 	    statusBar.setMessage(allProjectsTimer.stringTime());
-	    
+
 	}
     }
 
